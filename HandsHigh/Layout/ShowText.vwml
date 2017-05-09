@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Grid
+  Size="{ScreenSize}"
+  ForegroundColor="Black"
+  BackgroundColor="White">
+  <Grid
+    Size="{ScreenSize}">
+    <Label
+      Name="BigMessage"
+      Size="{ScreenSize}"
+      VerticalContentAlignment="Center"
+      FontName="Fonts/BigFont"
+      FontSize="{BigTextSize}"
+      Content="{BigMessageText}"/>
+  </Grid>
+</Grid>
