@@ -1,0 +1,2 @@
+    [ ] Hands high:  be able to subscribe to channels
+	- eg: A concert publishes a channel so that all the phones sync to their light show
