@@ -19,7 +19,22 @@ export class MainPage extends React.Component<MainPageProps> {
     // render
     // -------------------------------------------------------------------
     render() {
-        return <div>MAIN PAGE</div>
+        const {model} = this.props;
+        if(!model) {
+            return <div>No Model?</div>
+        }
+
+        return <div>
+            <h2>MAIN PAGE</h2>
+            <div>
+            {
+                model.syncStatusItems.map(i => {
+                    return <div key={i.id}>{i.text}</div>
+                })
+            }
+
+            </div>
+        </div>
     };
 
 }
