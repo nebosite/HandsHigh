@@ -2,8 +2,8 @@ import Logger from 'js-logger';
 import {createRoot} from 'react-dom/client'
 import { GLOBALS } from './Globals';
 import 'index.css'
-import { ClientModel } from 'models/ClientModel';
 import { MainPage } from 'pages/MainPage';
+import { MainModel } from 'models/MainModel';
 
 // Configure logging levels here
 // TODO: While in production, set default log level to WARN/ERROR
@@ -28,7 +28,7 @@ if (window.location.href.toLowerCase().startsWith('http://clusterfun.tv')) {
 
 Logger.info(`------- PAGE RELOAD -------------------`)
 
-const model = new ClientModel()
+const model = new MainModel()
   
 setTimeout(async() => { root.render( <MainPage model={model}/> );  },0)
 root.render( <div>Loading stuff....</div> );     

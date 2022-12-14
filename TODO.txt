@@ -1,7 +1,7 @@
 TODO
     [x] synchronize two pages
     [x] Fix formatting
-    [ ] Main Page: pick a start time and create a URL
+    [x] Main Page: pick a start time and create a URL
     [ ] Go to playback page from generated URL and start the song
         Let the user pick the track
         [ ] Show synchronized time in the header

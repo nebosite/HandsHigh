@@ -4,3 +4,9 @@
     height: 100%;
     width: 100%;
 }
+
+.FeatureSection {
+    background: #00000020;
+    margin: 20px;
+    padding: 10px;
+}

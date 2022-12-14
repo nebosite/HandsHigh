@@ -1,13 +1,13 @@
 import HandsHighAssets from "assets/Assets";
 import { MediaHelper } from "helpers/MediaHelper";
 import { observer } from "mobx-react";
-import { ClientModel } from "models/ClientModel";
+import { FlashMobModel } from "models/FlashMobModel";
 import React from "react";
 
 
 
 interface FlashMobProps {
-    model?: ClientModel
+    model?: FlashMobModel
 }
 
 // -------------------------------------------------------------------
@@ -15,7 +15,6 @@ interface FlashMobProps {
 // -------------------------------------------------------------------
 @observer
 export class FlashMob extends React.Component<FlashMobProps> {
-    private _urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     media: MediaHelper;
 
     // -------------------------------------------------------------------
@@ -52,7 +51,7 @@ export class FlashMob extends React.Component<FlashMobProps> {
 
         setInterval(()=>{
             if(label) {
-                label.innerText = `Seconds to start: ${this.props.model?.secondsToStart}`
+                label.innerText = `Seconds to start: ${this.props.model?.secondsToStart.toFixed(1)}`
             }
             if(background) {
                 background.style.backgroundColor = colors[colorIndex++ % 4]
@@ -70,9 +69,15 @@ export class FlashMob extends React.Component<FlashMobProps> {
         }
 
         return <div id="ThePage" style={{height: "100%"}}>
-            <h2>MAIN PAGE</h2>
+            <div>Playback...</div>
             <div id="FastPrinter" />
-            <button onClick={()=>model.start()}>Click to start</button>
+            <div>
+                Start Track: 
+                <button onClick={()=>model.start(0)}>1</button>
+                <button onClick={()=>model.start(1)}>2</button>
+                <button onClick={()=>model.start(2)}>3</button>
+                <button onClick={()=>model.start(3)}>4</button>
+            </div>
         </div>
     };
 

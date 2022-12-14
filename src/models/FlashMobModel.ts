@@ -1,23 +1,7 @@
 import {  action, makeObservable, observable } from "mobx";
+import { MainModel } from "./MainModel";
 
-interface TimeNugget {
-    utc_datetime: string
-    // "abbreviation": "PST",
-    // "client_ip": "50.35.127.71",
-    // "datetime": "2022-12-12T13:10:56.852782-08:00",
-    // "day_of_week": 1,
-    // "day_of_year": 346,
-    // "dst": false,
-    // "dst_from": null,
-    // "dst_offset": 0,
-    // "dst_until": null,
-    // "raw_offset": -28800,
-    // "timezone": "America/Los_Angeles",
-    // "unixtime": 1670879456,
-    // "utc_datetime": "2022-12-12T21:10:56.852782+00:00",
-    // "utc_offset": "-08:00",
-    // "week_number": 50
-}
+
 
 const testMusic = {
     instruments: [
@@ -93,7 +77,6 @@ const testMusic = {
 
 
 
-const MS_PER_MINUTE = 60 * 1000;
 export interface StatusItem {
     id: number,
     text: string
@@ -105,13 +88,12 @@ export interface StatusItem {
 //--------------------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------------------
-export class ClientModel {
+export class FlashMobModel {
 
     semiToneMap = new Map<string,{name: string, semitone: number}>()
     public syncStatusItems: StatusItem[] = observable([] as StatusItem[])
 
-    private _timeDelta = 0;
-    private _startTime = Date.now() + 10000000000;
+    private _startTime = 0;
     changeColor: (color: string) => void = ()=>{}
     playSound: (name: string, semitone: number, volume: number) => void = () => {}
 
@@ -123,30 +105,27 @@ export class ClientModel {
         } 
     }
 
-    get adjustedNow() { return Date.now() + this._timeDelta}
+    private _mainModel: MainModel;
     
 
     //--------------------------------------------------------------------------------------
     // 
     //--------------------------------------------------------------------------------------
-    constructor() {
+    constructor(mainModel: MainModel, startTime: number) {
         makeObservable(this);
-        console.log(`Fooligans`)
-        this.calibrateServerTimeOffset();
-
+        this._mainModel = mainModel;
+        this._startTime = startTime;
+        console.log(`START: ${startTime}`)
         this.fillSemitones();
-
-
     }
 
     //--------------------------------------------------------------------------------------
     // 
     //--------------------------------------------------------------------------------------  
-    start() {
-        this._startTime = this.adjustedNow + 6000;
+    start(trackId: number) {
         const song = testMusic;
         const semiToneOffset = this.semiToneMap.get(song.instruments[0].note)!.semitone;
-        const track = testMusic.sections[0].tracks[0];
+        const track = testMusic.sections[0].tracks[trackId];
         let position = 0;
 
         const getPlayEventTime = (beatOffset: number) => {
@@ -154,10 +133,15 @@ export class ClientModel {
         }
 
         let nextPlay = getPlayEventTime(track.sequence[position][0] as number);
+        while(nextPlay < this._mainModel.adjustedNow) {
+            position++;
+            if(position >= track.sequence.length) break;
+            nextPlay = getPlayEventTime(track.sequence[position][0] as number);
+        }
         setInterval(()=>{
-            this.secondsToStart =Math.floor((this._startTime - this.adjustedNow)/100)/10;
+            this.secondsToStart =Math.floor((this._startTime - this._mainModel.adjustedNow)/100)/10;
 
-            const now = this.adjustedNow;
+            const now = this._mainModel.adjustedNow;
             if(now > nextPlay && position < track.sequence.length) {
                 const note = track.sequence[position][1] as string;
                 const noteInfo = this.semiToneMap.get(note.substring(0,2)) ?? {name: "A0", semitone: 0}
@@ -220,76 +204,5 @@ export class ClientModel {
         }
     }
 
-    //--------------------------------------------------------------------------------------
-    // 
-    //--------------------------------------------------------------------------------------
-    calibrateServerTimeOffset = () => {
-        let id = 0;
-        let bestElapsed = 10000000;
-        let backoff_ms = 100;
-        let delta = 0;
-        const maxServerPings = 10;
-        const goodEnoughElapsedTime_ms = 12;
-        
-        const checkTime = async () => {
-            const start = Date.now();
-            const nugget = await this.restCall<TimeNugget>("http://worldtimeapi.org/api/timezone/America/Los_Angeles")
-            const end = Date.now();
-            const elapsed = end - start;
-            if(elapsed < bestElapsed) {
-                bestElapsed = elapsed;
-                const serverTime = Date.parse(nugget.utc_datetime) - elapsed/2;
-                delta = Math.floor(start - serverTime.valueOf());
-            }
-            id++;
-            backoff_ms *= 1.5;
 
-            let done = elapsed <= goodEnoughElapsedTime_ms;
-            if(id >= maxServerPings) done = true;
-
-            if(!done) {
-                setTimeout(checkTime,backoff_ms)
-            }
-            else {
-                this._timeDelta = delta;
-                console.log(`Finished checking absolute time delta.  Tries: ${id} Best: ${bestElapsed} Delta: ${this._timeDelta}`)
-            }
-        }
-        setTimeout(checkTime,100)
-
-        // Do this check every 5 minutes
-        setTimeout(this.calibrateServerTimeOffset, 5 * MS_PER_MINUTE);
-    }
-
-    // -------------------------------------------------------------------
-    // _serverCall 
-    // -------------------------------------------------------------------
-    async restCall<T>(url: string, payload: any | undefined = undefined) {
-        if(payload) {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: [
-                    ['Content-Type', 'application/json']
-                ],
-                body: JSON.stringify(payload)
-            });
-            if (response.ok) {
-                return await response.json() as T
-            } else {
-                const responseBody = await response.text();
-                throw new Error("Failed to connect to game: " + responseBody);
-            }        
-        }
-        else {
-            const response = await fetch(url, { method: "GET" });
-            if (response.ok) {
-                const streamText = await response.text();
-                return await JSON.parse(streamText) as T
-            } else {
-                const responseBody = await response.text();
-                throw new Error("Server call failed" + responseBody);
-            }        
-        }
-
-    }
 }
