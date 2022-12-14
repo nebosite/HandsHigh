@@ -9,11 +9,12 @@ import { MainPage } from 'pages/MainPage';
 // TODO: While in production, set default log level to WARN/ERROR
 // eslint-disable-next-line
 Logger.useDefaults();
-if (process.env.REACT_APP_DEVMODE === 'development') {
-    Logger.setLevel(Logger.DEBUG);
-} else {
-    Logger.setLevel(Logger.WARN);
-}
+Logger.setLevel(Logger.DEBUG);
+// if (process.env.REACT_APP_DEVMODE === 'development') {
+//     Logger.setLevel(Logger.DEBUG);
+// } else {
+//     Logger.setLevel(Logger.WARN);
+// }
 
 const rootContainer = document.getElementById('root') as HTMLElement;
 const root = createRoot(rootContainer);
