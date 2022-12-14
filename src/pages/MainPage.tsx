@@ -47,7 +47,7 @@ export class MainPage extends React.Component<MainPageProps> {
     componentDidMount(): void {
         const label = document.getElementById("FastPrinter")  
         const background = document.getElementById("ThePage")
-        const colors= ["gray", "white", "yellow", "green"]
+        const colors= ["#a0a0a0", "#a8a8a8", "#afafaf", "#a8a8a8"]
         let colorIndex = 0;
 
         setInterval(()=>{
@@ -69,7 +69,7 @@ export class MainPage extends React.Component<MainPageProps> {
             return <div>No Model?</div>
         }
 
-        return <div id="ThePage">
+        return <div id="ThePage" style={{height: "100%"}}>
             <h2>MAIN PAGE</h2>
             <div id="FastPrinter" />
             <button onClick={()=>model.start()}>Click to start</button>

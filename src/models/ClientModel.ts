@@ -111,7 +111,7 @@ export class ClientModel {
     public syncStatusItems: StatusItem[] = observable([] as StatusItem[])
 
     private _timeDelta = 0;
-    private _startTime = Date.now() + 100000000;
+    private _startTime = Date.now() + 10000000000;
     changeColor: (color: string) => void = ()=>{}
     playSound: (name: string, semitone: number, volume: number) => void = () => {}
 
@@ -122,6 +122,8 @@ export class ClientModel {
             action(()=>{this._secondsToStart = value})()
         } 
     }
+
+    get adjustedNow() { return Date.now() + this._timeDelta}
     
 
     //--------------------------------------------------------------------------------------
@@ -141,18 +143,22 @@ export class ClientModel {
     // 
     //--------------------------------------------------------------------------------------  
     start() {
-        this._startTime = Math.floor(Date.now()/1000) * 1000 + 6000 + this._timeDelta;
+        this._startTime = this.adjustedNow + 6000;
         const song = testMusic;
         const semiToneOffset = this.semiToneMap.get(song.instruments[0].note)!.semitone;
         const track = testMusic.sections[0].tracks[0];
         let position = 0;
 
-        let nextPlay = this._startTime + this._timeDelta + 1000 * (track.sequence[position][0] as number);
-        setInterval(()=>{
-            this.secondsToStart =Math.floor((this._startTime - Date.now() + this._timeDelta)/1000);
+        const getPlayEventTime = (beatOffset: number) => {
+            return this._startTime + 1000 * beatOffset;
+        }
 
-            const adjustedNow = Date.now() + this._timeDelta;
-            if(adjustedNow > nextPlay && position < track.sequence.length) {
+        let nextPlay = getPlayEventTime(track.sequence[position][0] as number);
+        setInterval(()=>{
+            this.secondsToStart =Math.floor((this._startTime - this.adjustedNow)/100)/10;
+
+            const now = this.adjustedNow;
+            if(now > nextPlay && position < track.sequence.length) {
                 const note = track.sequence[position][1] as string;
                 const noteInfo = this.semiToneMap.get(note.substring(0,2)) ?? {name: "A0", semitone: 0}
                 let semiTone = noteInfo.semitone - semiToneOffset;
@@ -162,7 +168,7 @@ export class ClientModel {
                 this.playSound("dong", semiTone, 1);
                 position++;
                 if(position < track.sequence.length) {
-                    nextPlay = this._startTime + this._timeDelta + 1000 * (track.sequence[position][0] as number);
+                    nextPlay = getPlayEventTime(track.sequence[position][0] as number);
                 }
             }
         },10)        
@@ -217,7 +223,7 @@ export class ClientModel {
     //--------------------------------------------------------------------------------------
     // 
     //--------------------------------------------------------------------------------------
-    calibrateServerTimeOffset() {
+    calibrateServerTimeOffset = () => {
         let id = 0;
         let bestElapsed = 10000000;
         let backoff_ms = 100;
