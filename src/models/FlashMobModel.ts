@@ -167,6 +167,7 @@ export class FlashMobModel {
         const song = testMusic;
         const semiToneOffset = this.semiToneMap.get(song.instruments[0].note)!.semitone;
         const tempoAdjust = .5;
+        let beatId = 0;
 
         const track = testMusic.sections[0].tracks[trackId];
         let position = 0;
@@ -185,23 +186,35 @@ export class FlashMobModel {
             }
             getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
         }
+
+        let nextBeatTime = getPlayEventTime(beatId);
+
         setInterval(()=>{
             const now = this._mainModel.adjustedNow;
-            if(now > getNextPlayTime && position < track.sequence.length) {
-                const note = track.sequence[position][1] as string;
-                const noteInfo = this.semiToneMap.get(note.substring(0,2)) ?? {name: "A0", semitone: 0}
-                let semiTone = noteInfo.semitone - semiToneOffset;
-                if(note.length > 2) semiTone += (note[3] === "+" ? -1 : 1)
+            if(!this.songIsDone) {
+                if(now > nextBeatTime) {
+                    this.changeColor((beatId % 2 === 0) ?  "red": "black")
+                    beatId++;
+                    nextBeatTime = getPlayEventTime(beatId);
+                }
+                
+                if(now > getNextPlayTime) {
+                    const note = track.sequence[position][1] as string;
+                    const noteInfo = this.semiToneMap.get(note.substring(0,2)) ?? {name: "A0", semitone: 0}
+                    let semiTone = noteInfo.semitone - semiToneOffset;
+                    if(note.length > 2) semiTone += (note[3] === "+" ? -1 : 1)
 
-                //console.log(`PLAY ${note} ${semiTone} ${nextPlay}`)
-                this.playSound("dong", semiTone, 1);
-                position++;
-                if(position < track.sequence.length) {
-                    getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
+                    //console.log(`PLAY ${note} ${semiTone} ${nextPlay}`)
+                    this.playSound("dong", semiTone, 1);
+                    position++;
+                    if(position < track.sequence.length) {
+                        getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
+                    }
+                    else {
+                        this.songIsDone = true;
+                    }
                 }
-                else {
-                    this.songIsDone = true;
-                }
+
             }
         },2)        
     }

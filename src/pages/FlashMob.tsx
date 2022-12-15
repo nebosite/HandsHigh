@@ -37,7 +37,15 @@ export class FlashMob extends React.Component<FlashMobProps> {
                     const rateAdjust = this.media.soundHelper.getRateAdjust(semiTone)
                     this.media.playSound(sound, {volume, rateAdjust});
                 }
-            }            
+            }      
+            
+            props.model.changeColor = (newColor) => {
+                const background = document.getElementById("ThePage")
+                if(background) {
+                    background.style.backgroundColor = newColor;
+                }
+                  
+            }
         }
     }
 
@@ -46,9 +54,6 @@ export class FlashMob extends React.Component<FlashMobProps> {
     //--------------------------------------------------------------------------------------
     componentDidMount(): void {
         const label = document.getElementById("FastPrinter")  
-        const background = document.getElementById("ThePage")
-        const colors= ["#a0a0a0", "#a8a8a8", "#afafaf", "#a8a8a8"]
-        let colorIndex = 0;
 
         setInterval(()=>{
             if(label) {
@@ -59,9 +64,6 @@ export class FlashMob extends React.Component<FlashMobProps> {
                 else {
                     label.innerText = ""
                 }
-            }
-            if(background) {
-                background.style.backgroundColor = colors[colorIndex]
             }
         },200)
     }

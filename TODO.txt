@@ -10,7 +10,7 @@ TODO
     [x] Fix tempo
     [x] show when the song is done
     [x] Pick random track and make track picking optional
-    [ ] Add background color changes
+    [x] Add background color changes
     [ ] Deploy and try from phone
 DONE
 

@@ -32,6 +32,7 @@ export class PickerView extends React.Component<PickerViewProps> {
         return <div>
             <div className={styles.FeatureSection}>
                     <h4>Flash Mob</h4>
+                    <button onClick={() => model.addTime(5)}>5 seconds</button>
                     <button onClick={() => model.addTime(30)}>30 seconds</button>
                     <button onClick={() => model.addTime(300)}>5 min</button>
                     <button onClick={() => model.addTime(1800)}>30 min</button>
