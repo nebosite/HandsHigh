@@ -7,7 +7,7 @@ TODO
         [x] Show synchronized time in the header
         [x] Update time while picking track
         [x] Hide track picker on start
-    [ ] Fix tempo
+    [x] Fix tempo
     [ ] show when the song is done
     [ ] Pick random track and make track picking optional
     [ ] Add background color changes

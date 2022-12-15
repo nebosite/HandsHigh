@@ -20,12 +20,19 @@ const testMusic = {
                     sequence: [
                         [0, "D5"],
                         [1, "C5+"],
-                        [1.9375, "B4"],
+                        [1.75, "B4"],
                         [2, "A4"],
                         [3.5, "G4"],
                         [4, "F4+"],
                         [5, "E4"],
                         [6, "D4"],
+                        [7.5, "A4"],
+                        [8, "B4"],
+                        [9.5, "B4"],
+                        [10, "C5+"],
+                        [11.5, "C5+"],
+                        [12, "D5"],
+
                     ]
                 },
                 {
@@ -39,6 +46,12 @@ const testMusic = {
                         [4, "D4"],
                         [5, "C4"],
                         [6, "D4"],
+                        [7.5, "A4"],
+                        [8, "G4"],
+                        [9.5, "G4"],
+                        [10, "E4"],
+                        [11.5, "G4"],
+                        [12, "F4+"],
                     ]
                 },
                 {
@@ -53,6 +66,12 @@ const testMusic = {
                         [5, "A3"],
                         [5.5, "G3"],
                         [6, "F3+"],
+                        [7.5, "D4"],
+                        [8, "D4"],
+                        [9.5, "D4"],
+                        [10, "A3"],
+                        [11.5, "A3"],
+                        [12, "A3"],
                     ]
                 },
                 {
@@ -66,6 +85,12 @@ const testMusic = {
                         [4, "A2"],
                         [5, "A2"],
                         [6, "D3"],
+                        [7.5, "F3+"],
+                        [8, "G3"],
+                        [9.5, "G3"],
+                        [10, "A3"],
+                        [11.5, "A3"],
+                        [12, "D3"],
                     ]
                 },
 
@@ -134,23 +159,25 @@ export class FlashMobModel {
     start(trackId: number) {
         const song = testMusic;
         const semiToneOffset = this.semiToneMap.get(song.instruments[0].note)!.semitone;
+        const tempoAdjust = .5;
+
         const track = testMusic.sections[0].tracks[trackId];
         let position = 0;
         this.pickedTrack = trackId;
 
         const getPlayEventTime = (beatOffset: number) => {
-            return this._startTime + 1000 * beatOffset;
+            return this._startTime + 1000 * beatOffset * tempoAdjust;
         }
 
-        let nextPlay = getPlayEventTime(track.sequence[position][0] as number);
-        while(nextPlay < this._mainModel.adjustedNow) {
+        let getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
+        while(getNextPlayTime < this._mainModel.adjustedNow) {
             position++;
             if(position >= track.sequence.length) break;
-            nextPlay = getPlayEventTime(track.sequence[position][0] as number);
+            getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
         }
         setInterval(()=>{
             const now = this._mainModel.adjustedNow;
-            if(now > nextPlay && position < track.sequence.length) {
+            if(now > getNextPlayTime && position < track.sequence.length) {
                 const note = track.sequence[position][1] as string;
                 const noteInfo = this.semiToneMap.get(note.substring(0,2)) ?? {name: "A0", semitone: 0}
                 let semiTone = noteInfo.semitone - semiToneOffset;
@@ -160,7 +187,7 @@ export class FlashMobModel {
                 this.playSound("dong", semiTone, 1);
                 position++;
                 if(position < track.sequence.length) {
-                    nextPlay = getPlayEventTime(track.sequence[position][0] as number);
+                    getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
                 }
             }
         },2)        
