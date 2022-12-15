@@ -28,6 +28,7 @@ export class PickerView extends React.Component<PickerViewProps> {
             model.startTime = newTime;
         }
         const url = window.location.toString() + model.url
+
         return <div>
             <div className={styles.FeatureSection}>
                     <h4>Flash Mob</h4>
@@ -36,7 +37,7 @@ export class PickerView extends React.Component<PickerViewProps> {
                     <button onClick={() => model.addTime(1800)}>30 min</button>
                     <br/>
                     <DateTimePicker onChange={timeChange} value={model.startTime} />
-                    <div>Seconds til start: {model.secondsTilStart.toFixed(1)}</div>
+                    <div>Time until start: {model.timeTillStart}</div>
                     <div>URL: <a href={url}>{url}</a></div>
                 </div>            
         </div> 

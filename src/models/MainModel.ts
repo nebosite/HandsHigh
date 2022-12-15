@@ -21,6 +21,27 @@ interface TimeNugget {
 
 const MS_PER_MINUTE = 60 * 1000;
 
+export const timeSpanToString = (secondsTillStart: number) => {
+    const days = Math.floor(secondsTillStart / (24 * 3600))
+    let remainingSeconds = secondsTillStart - days * 24 * 3600;
+    const hours = Math.floor(remainingSeconds / 3600);
+    remainingSeconds -= hours * 3600;
+    const minutes = Math.floor(remainingSeconds / 60);
+    remainingSeconds -= minutes * 60;
+    const seconds = Math.floor(remainingSeconds);
+    const partialSeconds = remainingSeconds - seconds;
+    let output = "";
+    if(days > 0) output = `${days} days, `
+
+    const hourPart = hours.toString().padStart(2,"0")
+    const minutePart = minutes.toString().padStart(2,"0")
+    const secondsPart = seconds.toString().padStart(2,"0")
+    const partialPart = Math.floor(partialSeconds * 10)
+    output += `${hourPart}:${minutePart}:${secondsPart}.${partialPart}`
+    return output;
+
+}
+
 export class MainModel {
     @observable  private _startTime = new Date(Date.now() + 60000);
     get startTime() {return this._startTime}
@@ -29,8 +50,12 @@ export class MainModel {
     @observable  private _secondsTilStart = 0;
     get secondsTilStart() {return this._secondsTilStart}
     set secondsTilStart(value) {action(()=>{this._secondsTilStart = value})()}
-
+    get timeTillStart() {
+        if(this.secondsTilStart < 0) return "(Time is passed)"
+        else return timeSpanToString(this.secondsTilStart)
+    }
     get url() {return `flashmob?start=${this._startTime.valueOf()}`}
+
     
     
     

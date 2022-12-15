@@ -105,6 +105,11 @@ export class FlashMobModel {
         } 
     }
 
+    @observable  private _pickedTrack = -1
+    get pickedTrack() {return this._pickedTrack}
+    set pickedTrack(value) {action(()=>{this._pickedTrack = value})()}
+    
+
     private _mainModel: MainModel;
     
 
@@ -117,6 +122,10 @@ export class FlashMobModel {
         this._startTime = startTime;
         console.log(`START: ${startTime}`)
         this.fillSemitones();
+
+        setInterval(()=>{
+            this.secondsToStart =Math.floor((this._startTime - this._mainModel.adjustedNow)/100)/10;
+        },100)   
     }
 
     //--------------------------------------------------------------------------------------
@@ -127,6 +136,7 @@ export class FlashMobModel {
         const semiToneOffset = this.semiToneMap.get(song.instruments[0].note)!.semitone;
         const track = testMusic.sections[0].tracks[trackId];
         let position = 0;
+        this.pickedTrack = trackId;
 
         const getPlayEventTime = (beatOffset: number) => {
             return this._startTime + 1000 * beatOffset;
@@ -139,8 +149,6 @@ export class FlashMobModel {
             nextPlay = getPlayEventTime(track.sequence[position][0] as number);
         }
         setInterval(()=>{
-            this.secondsToStart =Math.floor((this._startTime - this._mainModel.adjustedNow)/100)/10;
-
             const now = this._mainModel.adjustedNow;
             if(now > nextPlay && position < track.sequence.length) {
                 const note = track.sequence[position][1] as string;
@@ -155,7 +163,7 @@ export class FlashMobModel {
                     nextPlay = getPlayEventTime(track.sequence[position][0] as number);
                 }
             }
-        },10)        
+        },2)        
     }
 
     //--------------------------------------------------------------------------------------

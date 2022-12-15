@@ -2,6 +2,7 @@ import HandsHighAssets from "assets/Assets";
 import { MediaHelper } from "helpers/MediaHelper";
 import { observer } from "mobx-react";
 import { FlashMobModel } from "models/FlashMobModel";
+import { timeSpanToString } from "models/MainModel";
 import React from "react";
 
 
@@ -51,10 +52,16 @@ export class FlashMob extends React.Component<FlashMobProps> {
 
         setInterval(()=>{
             if(label) {
-                label.innerText = `Seconds to start: ${this.props.model?.secondsToStart.toFixed(1)}`
+                const remainingSeconds = this.props.model?.secondsToStart ?? 0
+                if(remainingSeconds > 0) {
+                    label.innerText = `Countdown: ${timeSpanToString(remainingSeconds)}`
+                }
+                else {
+                    label.innerText = ""
+                }
             }
             if(background) {
-                background.style.backgroundColor = colors[colorIndex++ % 4]
+                background.style.backgroundColor = colors[colorIndex]
             }
         },200)
     }
@@ -69,15 +76,19 @@ export class FlashMob extends React.Component<FlashMobProps> {
         }
 
         return <div id="ThePage" style={{height: "100%"}}>
-            <div>Playback...</div>
             <div id="FastPrinter" />
-            <div>
-                Start Track: 
-                <button onClick={()=>model.start(0)}>1</button>
-                <button onClick={()=>model.start(1)}>2</button>
-                <button onClick={()=>model.start(2)}>3</button>
-                <button onClick={()=>model.start(3)}>4</button>
-            </div>
+            {
+                model.pickedTrack >= 0 
+                    ? <div>Picked track {model.pickedTrack + 1}</div>
+                    : <div>
+                        Pick a track: 
+                        <button onClick={()=>model.start(0)}>1</button>
+                        <button onClick={()=>model.start(1)}>2</button>
+                        <button onClick={()=>model.start(2)}>3</button>
+                        <button onClick={()=>model.start(3)}>4</button>
+                    </div>
+            }
+            
         </div>
     };
 

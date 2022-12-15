@@ -2,10 +2,15 @@ TODO
     [x] synchronize two pages
     [x] Fix formatting
     [x] Main Page: pick a start time and create a URL
-    [ ] Go to playback page from generated URL and start the song
-        Let the user pick the track
-        [ ] Show synchronized time in the header
-    
+    [x] Go to playback page from generated URL and start the song
+        [x] Let the user pick the track
+        [x] Show synchronized time in the header
+        [x] Update time while picking track
+        [x] Hide track picker on start
+    [ ] Fix tempo
+    [ ] show when the song is done
+    [ ] Pick random track and make track picking optional
+    [ ] Add background color changes
     [ ] Deploy and try from phone
 DONE
 
