@@ -8,8 +8,8 @@ TODO
         [x] Update time while picking track
         [x] Hide track picker on start
     [x] Fix tempo
-    [ ] show when the song is done
-    [ ] Pick random track and make track picking optional
+    [x] show when the song is done
+    [x] Pick random track and make track picking optional
     [ ] Add background color changes
     [ ] Deploy and try from phone
 DONE

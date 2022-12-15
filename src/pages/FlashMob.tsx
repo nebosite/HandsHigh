@@ -75,18 +75,23 @@ export class FlashMob extends React.Component<FlashMobProps> {
             return <div>No Model?</div>
         }
 
+        if(model.songIsDone) {
+            return <div>This flash mob has been completed</div>
+        }
+
         return <div id="ThePage" style={{height: "100%"}}>
             <div id="FastPrinter" />
             {
-                model.pickedTrack >= 0 
-                    ? <div>Picked track {model.pickedTrack + 1}</div>
-                    : <div>
-                        Pick a track: 
+                model.secondsToStart >= 0 
+                    ? <div>
+                        Playing track {model.pickedTrack + 1}<br />
+                        (optional) Pick a different track: 
                         <button onClick={()=>model.start(0)}>1</button>
                         <button onClick={()=>model.start(1)}>2</button>
                         <button onClick={()=>model.start(2)}>3</button>
                         <button onClick={()=>model.start(3)}>4</button>
                     </div>
+                    : null
             }
             
         </div>

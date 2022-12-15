@@ -133,6 +133,11 @@ export class FlashMobModel {
     @observable  private _pickedTrack = -1
     get pickedTrack() {return this._pickedTrack}
     set pickedTrack(value) {action(()=>{this._pickedTrack = value})()}
+
+    @observable  private _songIsDone = false;
+    get songIsDone() {return this._songIsDone}
+    set songIsDone(value) {action(()=>{this._songIsDone = value})()}
+    
     
 
     private _mainModel: MainModel;
@@ -147,6 +152,7 @@ export class FlashMobModel {
         this._startTime = startTime;
         console.log(`START: ${startTime}`)
         this.fillSemitones();
+        this.pickedTrack = Date.now() % 4;
 
         setInterval(()=>{
             this.secondsToStart =Math.floor((this._startTime - this._mainModel.adjustedNow)/100)/10;
@@ -157,6 +163,7 @@ export class FlashMobModel {
     // 
     //--------------------------------------------------------------------------------------  
     start(trackId: number) {
+        this.songIsDone = false;
         const song = testMusic;
         const semiToneOffset = this.semiToneMap.get(song.instruments[0].note)!.semitone;
         const tempoAdjust = .5;
@@ -172,7 +179,10 @@ export class FlashMobModel {
         let getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
         while(getNextPlayTime < this._mainModel.adjustedNow) {
             position++;
-            if(position >= track.sequence.length) break;
+            if(position >= track.sequence.length) {
+                this.songIsDone = true;
+                break;
+            }
             getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
         }
         setInterval(()=>{
@@ -188,6 +198,9 @@ export class FlashMobModel {
                 position++;
                 if(position < track.sequence.length) {
                     getNextPlayTime = getPlayEventTime(track.sequence[position][0] as number);
+                }
+                else {
+                    this.songIsDone = true;
                 }
             }
         },2)        
